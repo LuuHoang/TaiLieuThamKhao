@@ -1,0 +1,29 @@
+<?php
+
+namespace App\Repositories\Criteria;
+
+use App\Repositories\Contracts\CriteriaInterface;
+use App\Repositories\Contracts\RepositoryInterface;
+
+class SearchAppVersionsCriteria implements CriteriaInterface
+{
+    private $_paramQuery;
+
+    public function __construct(Array $paramQuery)
+    {
+        $this->_paramQuery = $paramQuery;
+    }
+
+    public function apply($model, RepositoryInterface $repository)
+    {
+        if (!empty($this->_paramQuery['search'])) {
+            $model = $model-> where(function ($query) {
+                $query->where('name', 'LIKE', '%' . $this->_paramQuery['search'] . '%')
+                    ->orWhere('en_description', 'LIKE' , '%' . $this->_paramQuery['search'] . '%')
+                    ->orWhere('ja_description', 'LIKE' , '%' . $this->_paramQuery['search'] . '%')
+                    ->orWhere('vi_description', 'LIKE' , '%' . $this->_paramQuery['search'] . '%');
+            });
+        }
+        return $model;
+    }
+}
